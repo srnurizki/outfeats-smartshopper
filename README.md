@@ -4,6 +4,18 @@ A personalized fashion shopping assistant built with a multi-agent RAG architect
 
 ---
 
+## Live Demo
+
+**Web App:** [https://outfeats-frontend.vercel.app](https://outfeats-frontend.vercel.app)
+
+Try asking:
+- `"Show me casual dresses under $20"`
+- `"Find floral pattern tops in blue"`
+- `"What are your return and refund policies?"`
+- `"Do you offer free shipping?"`
+
+---
+
 ## Architecture
 
 ```

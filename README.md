@@ -176,6 +176,84 @@ npm run dev
 
 ---
 
+## Storing Strategy
+
+### Commons Collection
+
+Data source: [Bitext Customer Support LLM Chatbot Training Dataset](https://huggingface.co/datasets/bitext/Bitext-customer-support-llm-chatbot-training-dataset) — 26,872 customer support Q&A pairs across 27 intent categories.
+
+Each document is stored with the following structure:
+
+```
+Document(
+    content  = instruction,        # customer query text (used for embedding)
+    meta = {
+        response  : str,           # expected support answer
+        category  : str,           # e.g. "ORDER", "PAYMENT", "SHIPPING"
+        intent    : str            # e.g. "track_order", "payment_issue"
+    }
+)
+```
+
+**Embedding:** `all-MiniLM-L6-v2` (384 dimensions) via `SentenceTransformersDocumentEmbedder`.
+
+**Duplicate policy:** `DuplicatePolicy.OVERWRITE` — re-running the store script safely overwrites existing documents by ID.
+
+**Filter fields indexed:** `meta.category` and `meta.intent` — enables pre-filtering before vector search to narrow the retrieval scope.
+
+### Products Collection
+
+Each product document stores structured metadata alongside its embedding:
+
+```
+Document(
+    content  = product_content,    # concatenated text for embedding
+    meta = {
+        name    : str,
+        price   : float,
+        color   : str,
+        style   : str,
+        fabric  : str,
+        pattern : str,
+        size    : list[str]
+    }
+)
+```
+
+**Filter fields indexed:** `meta.style`, `meta.color`, `meta.fabric`, `meta.pattern`.
+
+---
+
+## RAG Strategy
+
+### Commons RAG
+
+```
+User query
+    → MetaDataFilterPipeline     — LLM extracts category + intent from query
+    → MongoDBAtlasEmbeddingRetriever
+          pre-filter: { category: ..., intent: ... }
+          vector search: cosine similarity on query embedding
+    → CommonsRAGPipeline         — retrieved docs injected into prompt → DeepSeek generates answer
+```
+
+The metadata filter narrows the search space before vector similarity is computed, improving both relevance and retrieval speed. If no filters are extracted, the retriever falls back to pure vector search across all documents.
+
+### Product RAG
+
+```
+User query
+    → ParaphraserPipeline        — rewrites query using chat history for context continuity
+    → MetaDataFilterPipeline     — LLM extracts color, style, fabric, pattern
+    → MongoDBAtlasEmbeddingRetriever
+          pre-filter: { style: ..., color: ..., fabric: ..., pattern: ... }
+          vector search: cosine similarity on paraphrased query embedding
+    → ProductRAGPipeline         — retrieved products injected into prompt → DeepSeek generates ranked list
+    → SerpAPI                    — fetches product image for each retrieved item
+```
+
+---
+
 ## Deployment
 
 ### Backend (GCP Cloud Run)

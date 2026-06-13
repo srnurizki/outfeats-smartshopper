@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+
+# Environment
+.env
+*.env.local
+
+# Data
+data/
+*.csv
+*.pkl
+*.parquet
+
+# Experiments
+experiments/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Virtual env
+venv/
+ryn-env/
+*.venv
+
+# Frontend
+frontend/node_modules/
+frontend/.next/
+frontend/.env.local
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/

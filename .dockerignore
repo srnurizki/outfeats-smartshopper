@@ -1,0 +1,14 @@
+data/
+.env
+.env.*
+!.env.example
+__pycache__/
+*.pyc
+*.pyo
+.git/
+frontend/
+scripts/
+monitoring/reports/
+node_modules/
+*.md
+.pytest_cache/

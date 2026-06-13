@@ -1,0 +1,13 @@
+.git/
+__pycache__/
+*.pyc
+.env
+data/
+*.csv
+experiments/
+frontend/
+node_modules/
+venv/
+ryn-env/
+*.pkl
+*.ipynb
